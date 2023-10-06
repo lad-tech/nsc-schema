@@ -1,7 +1,7 @@
 import { method } from "../src"
 
 describe("method", () => {
-    it("simple" => () => {
+    it("simple", () => {
     	method({
 
 	})

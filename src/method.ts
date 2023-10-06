@@ -1,3 +1,5 @@
-import { MethodSchema } from "./types.ts";
+import { MethodSchema } from "./types";
 
-export const method = (schema: MethodSchema): MethodSchema => {};
+export const method = (schema: MethodSchema): MethodSchema => {
+       return 1 as any;
+};
