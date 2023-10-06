@@ -1,0 +1,21 @@
+{
+  "name": "nsc-schema",
+  "version": "1.0.0",
+  "description": "Schema generator for nsc-toolkit",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier --write \"src/**/*.ts\"",	
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nsc-toolkit",
+    "nsc-schema"
+  ],
+  "author": "eawapownikov@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  }
+}
