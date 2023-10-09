@@ -112,8 +112,9 @@ export const UserShort = schema({
 
 > /service/schemas/index.ts - подключение файла схем по пользователю
 ```typescript
-export * from "./user";
+export * as user from "./user";
 ```
+Так как имена полей в разных схемах могут пересекаться по имени, то re export лучше делать как `* as user`
 
 ## Формирование основного файла конфигурации
 
