@@ -8,13 +8,16 @@
 - Авто дополнение `JsonSchema`
 - Проверка наличия поле `description` для описания полей и схем. [Опционально]
 - Проверка поля `required`, на наличие всех полей в `properties`
+- Дополнительные функции по работе с `JsonSchema` - ой
+    - `list` - получает схему для списка из схемы одного элемента.
+    - `asNull` - добавляет к текущей схеме тип `null`
 
 ## Структура папки `service`
 
 ```
 service
-  methods - содержит описание всех методов
-    GetUserList.ts - конкретный метод
+  methods - Описание всех методов
+    GetUserList.ts - метод получения списка пользователей
     index.ts - подключение методов через re export
   fields - поля сущностей
     user.ts
@@ -49,8 +52,6 @@ export const GetUserList = method({
 })
 ```
 
-Функция `list` получает схему для списка из схемы одного элемента.
-
 Функция `result` формирует схему ответа их полученной схемы исходя из стандартов проекта. Реализуется в проекте.
 Функция `pagination` добавляет схему для описания результата пагинации. Реализуется в проекте.
 
@@ -69,6 +70,7 @@ import { field } from "@lad-tech/nsc-schema";
 import { makeId } from "shared/schema"; // Общие файлы для всего проекта
 
 export const user_id = makeId('ID пользователя');
+export const group_id = makeId('ID группы, к которой принадлежит пользователь');
 export const email = field({
     type: 'string',
     description: 'email пользователя',
@@ -89,20 +91,21 @@ export const last_name = field({
 > /service/schemas/user.ts - описание схемы `UserShort`
 
 ```typescript
-import { schema } from "@lad-tech/nsc-schema";
-import { user: { user_id, email, first_name } } from "../fields";
+import { schema, asNull } from "@lad-tech/nsc-schema";
+import { user: { user_id, group_id, email, first_name } } from "../fields";
 import { schema: { add_time, update_time } } from "shared/schema";
 
 export const UserShort = schema({
     type: 'object',
     properties: {
-        user_id,
+        user_id
+        group_id: asNull(group_id),
         email,
         first_name,
         add_time, 
         update_time
     },
-    required: ['user_id', 'email', 'first_name', 'add_time', 'update_time'],
+    required: ['user_id', 'group_id', 'email', 'first_name', 'add_time', 'update_time'],
 })
 ```
 
