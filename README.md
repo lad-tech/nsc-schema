@@ -30,7 +30,7 @@ service
 > /service/methods/GetUserList.ts - добавление метода
 ```typescript
 import { method, schema, list } from "@lad-tech/nsc-schema";
-import { responseResult } from "shared/schema"; // Общие файлы для всего проекта
+import { pagination, result } from "shared/schema"; // Общие файлы для всего проекта
 
 import { user: { user_id, email } } from "./fields";
 import { UserShort } from "./schema";
@@ -45,13 +45,14 @@ export const GetUserList = method({
             email,
         }
     }),
-    response: responseResult(list(UserShort)),
+    response: pagination(result(list(UserShort))),
 })
 ```
 
 Функция `list` получает схему для списка из схемы одного элемента.
 
-Функция `responseResult` формирует схему ответа их полученной схемы исходя из стандартов проекта. Реализуется в проекте.
+Функция `result` формирует схему ответа их полученной схемы исходя из стандартов проекта. Реализуется в проекте.
+Функция `pagination` добавляет схему для описания результата пагинации. Реализуется в проекте.
 
 > /service/methods/index.ts - подключение метода
 
@@ -105,7 +106,7 @@ export const UserShort = schema({
 })
 ```
 
-> /service/schemas/index.ts - подключение фала схем по пользователю
+> /service/schemas/index.ts - подключение файла схем по пользователю
 ```typescript
 export * from "./user";
 ```
