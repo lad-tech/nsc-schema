@@ -60,7 +60,9 @@ export const GetUserList = method({
 export { GetUserList } from "./GetUserList";
 ```
 
-- Описать все необходимые поля `user_id`, `email`, `first_name`
+## Описание необходимых полей
+
+- Описание полей `user_id`, `email`, `first_name`
 
 > /schema/fields/user.ts
 
@@ -68,21 +70,25 @@ export { GetUserList } from "./GetUserList";
 import { field } from "@lad-tech/nsc-schema";
 import { makeId } from "shared/schema"; // Общие файлы для всего проекта
 
-export const user_id = makeId('ID пользователя'),
-
+export const user_id = makeId('ID пользователя');
 export const email = field({
     type: 'string',
     description: 'email пользователя',
     format: 'email'
-})
-
+});
 export const first_name = field({
     type: 'string',
-    description: 'first_name имя пользователя',
-})
+    description: 'Имя пользователя',
+});
+export const last_name = field({
+    type: 'string',
+    description: 'Фамилия пользователя',
+});
 ```
 
-- Описать все необходимые схемы `UserShort`
+## Описание необходимых схем
+
+- Описание схемы `UserShort`
 
 > /schema/schemas/user.ts
 
