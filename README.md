@@ -1,5 +1,7 @@
 # nsc-schema - Инструмент по описанию схемы для библиотеки nsc-toolkit
 
+Данная библиотека предлагает для описание схемы сервиса вместо файла `service.schema.js`, использовать папку `service` с разбиением на файлы полей, схем и методов.
+
 ## Возможности
 
 - Авто дополнение конфигурации специфичной для библиотеки `nsc-toolkit`
@@ -7,10 +9,10 @@
 - Проверка наличия поле `description` для описания полей и схем. Опционально 
 - Проверка поля `required`, на наличие всех полей в `properties`
 
-## Использование
+## Структура папки `service`
 
 ```
-schema
+service
   methods - содержит описание всех методов
     GetUserList.ts - конкретный метод
     index.ts - подключение методов через re export
@@ -25,9 +27,7 @@ schema
 
 ## Пример объявления метода
 
-- В папке `methods` нужно создать файл с именем метода
-
-> /schema/methods/GetUserList.ts
+> /service/methods/GetUserList.ts - добавление метода
 ```typescript
 import { method, schema, list } from "@lad-tech/nsc-schema";
 import { responseResult } from "shared/schema"; // Общие файлы для всего проекта
@@ -53,9 +53,7 @@ export const GetUserList = method({
 
 Функция `responseResult` формирует схему ответа их полученной схемы исходя из стандартов проекта. Реализуется в проекте.
 
-- Подключить метод в index.ts
-
-> /schema/methods/index.ts
+> /service/methods/index.ts - подключение метода
 
 ```typescript
 export { GetUserList } from "./GetUserList";
@@ -63,9 +61,7 @@ export { GetUserList } from "./GetUserList";
 
 ## Описание необходимых полей
 
-- Описание полей `user_id`, `email`, `first_name`
-
-> /schema/fields/user.ts
+> /service/fields/user.ts - описание полей `user_id`, `email`, `first_name`
 
 ```typescript
 import { field } from "@lad-tech/nsc-schema";
@@ -89,9 +85,7 @@ export const last_name = field({
 
 ## Описание необходимых схем
 
-- Описание схемы `UserShort`
-
-> /schema/schemas/user.ts
+> /service/schemas/user.ts - описание схемы `UserShort`
 
 ```typescript
 import { schema } from "@lad-tech/nsc-schema";
@@ -111,9 +105,14 @@ export const UserShort = schema({
 })
 ```
 
+> /service/schemas/index.ts - подключение фала схем по пользователю
+```typescript
+export * from "./user";
+```
+
 ## Формирование основного файла конфигурации
 
-> schema/index.ts
+> /service/index.ts
 
 ```typescript
 import { config } from "@lad-tech/nsc-schema";
