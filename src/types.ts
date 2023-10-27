@@ -1,5 +1,7 @@
 export interface MethodSchema {}
 
+export type MaybeReadonlyArray<T> = Array<T> | ReadonlyArray<T>;
+
 export type ValueOf<T> = T[keyof T];
 
 /** Можно указать поле которое обязательное в типе */

@@ -1,5 +1,5 @@
 import { JSONSchema } from "./schema/types";
 
-export const schema = <T extends any>(schema: JSONSchema<T>) => {
+export const schema = (schema: JSONSchema) => {
     return schema;
 };

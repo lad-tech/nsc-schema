@@ -1,37 +1,25 @@
-// Скопировано и модифицировано с https://github.com/jrylan/json-schema-typed/blob/main/dist/node/draft-2020-12.ts
+import { MaybeReadonlyArray, ValueOf } from "../types";
 
-type MaybeReadonlyArray<T> = Array<T> | ReadonlyArray<T>;
-type ValueOf<T> = T[keyof T];
+export type JSONSchema = SchemaNumber | SchemaString | SchemaBoolean | SchemaNull | SchemaObject | SchemaArray | SchemaTypeOfArray;
 
-export type JSONSchema<
-  Value = any,
-  SchemaType = Value extends boolean ? "boolean"
-    : Value extends null ? "null"
-    : Value extends number ? "number" | "integer"
-    : Value extends string ? "string"
-    : Value extends unknown[] ? "array"
-    : Value extends Record<string | number, unknown> ? "object"
-    : JSONSchema.TypeValue,
-> = boolean | {
-
+type JSONSchemaAll = {
   /** Возможные типы null | boolean | object | array | number | string | integer */
-  type: TypeName;
+  type: TypeName | TypeName[];
   /** Описание для схемы */
   description: string;
   /** Указанная схема находится в статусе deprecated */
   deprecated?: boolean;
   /** Перечисление возможны значений */
-  enum?: MaybeReadonlyArray<Value>;
+  enum?: any; // TODO[cleverid]: Сделать проверку в зависимости от типа
   /** Значение по умолчанию */
-  default?: Value;
-
+  default?: any; // TODO[cleverid]: Сделать проверку в зависимости от типа
   // Различные виды схем
-  allOf?: MaybeReadonlyArray<JSONSchema<Value, SchemaType>>;
-  anyOf?: MaybeReadonlyArray<JSONSchema<Value, SchemaType>>;
-  oneOf?: MaybeReadonlyArray<JSONSchema<Value, SchemaType>>;
-  not?: JSONSchema<Value, SchemaType>;
+  allOf?: MaybeReadonlyArray<JSONSchema>;
+  anyOf?: MaybeReadonlyArray<JSONSchema>;
+  oneOf?: MaybeReadonlyArray<JSONSchema>;
+  not?: JSONSchema;
 
-  // type: string
+  // String
   /** Максимальное количество символов в строке */
   maxLength?: number;
   /** Минимальное количество символов в строке */
@@ -41,7 +29,7 @@ export type JSONSchema<
   /** Формат строки */
   format?: Format;
 
-  // type: number 
+  // Number 
   /** Минимальное значение для типа number*/
   minimum?: number;
   /** Максимальное значение для типа number */
@@ -53,7 +41,7 @@ export type JSONSchema<
   /** Кратно указанному значению для type: number, integer */
   multipleOf?: number;
 
-  // type: object
+  // Object
   /** Описание параметров type: object */
   properties?: Record<string, JSONSchema>;
   /** Массив обязательных полей type: object */
@@ -69,14 +57,8 @@ export type JSONSchema<
   /** Регулярное выражение для имени параметра type: object */
   propertyNames?: JSONSchema;
 
-  // type: array
-  // contains
-  contains?: JSONSchema<Value, SchemaType>;
-  /** Максимальное количество элементов которое должно встретиться при указании contains */
-  maxContains?: number;
-  /** Минимальное количество элементов которое должно встретиться при указании contains */
-  minContains?: number;
-  // items
+  // Array
+  /** Схема для описания элемента массива */
   items?: JSONSchema;
   /** Максимальное значение элементов в массиве */
   maxItems?: number;
@@ -88,107 +70,51 @@ export type JSONSchema<
   uniqueItems?: boolean;
 };
 
-// -----------------------------------------------------------------------------
+interface SchemaNumber extends Pick<JSONSchemaAll, FieldsAny | FieldsNumber> { type: 'number' | 'integer' }
+interface SchemaString extends Pick<JSONSchemaAll, FieldsAny | FieldsString> { type: 'string' }
+interface SchemaBoolean extends Pick<JSONSchemaAll, FieldsAny> { type: 'boolean' }
+interface SchemaNull extends Pick<JSONSchemaAll, FieldsAny> { type: 'null' }
+interface SchemaObject extends Pick<JSONSchemaAll, FieldsAny | FieldsObject> { type: 'object' }
+interface SchemaArray extends Pick<JSONSchemaAll, FieldsAny | FieldsArray> { type: 'array' }
+interface SchemaTypeOfArray extends JSONSchemaAll { type: TypeName[] }
 
-export namespace JSONSchema {
-  export type TypeValue = (
-    | ValueOf<TypeName>
-    | TypeName
-    | Array<ValueOf<TypeName> | TypeName>
-    | ReadonlyArray<ValueOf<TypeName> | TypeName>
-  );
-
-  /**
-   * JSON Schema interface
-   */
-  export type Interface<
-    Value = any,
-    SchemaType extends TypeValue = TypeValue,
-  > = Exclude<
-    JSONSchema<Value, SchemaType>,
-    boolean
-  >;
-
-  export type Array<T = any> = Pick<
-    Interface<T, "array">,
-    KeywordByType.Any | KeywordByType.Array
-  >;
-
-  export type Boolean = Pick<
-    Interface<boolean, "boolean">,
-    KeywordByType.Any
-  >;
-
-  export type Integer = Pick<
-    Interface<number, "integer">,
-    KeywordByType.Any | KeywordByType.Number
-  >;
-
-  export type Number = Pick<
-    Interface<number, "number">,
-    KeywordByType.Any | KeywordByType.Number
-  >;
-
-  export type Null = Pick<
-    Interface<null, "null">,
-    KeywordByType.Any
-  >;
-
-  export type Object<T = any> = Pick<
-    Interface<T, "object">,
-    KeywordByType.Any | KeywordByType.Object
-  >;
-
-  export type String = Pick<
-    Interface<string, "string">,
-    KeywordByType.Any | KeywordByType.String
-  >;
-}
-
-namespace KeywordByType {
-  export type Any =
-    | "allOf"
-    | "oneOf"
-    | "anyOf"
-    | "not"
-    | "default"
+type FieldsAny =
     | "deprecated"
     | "description"
-    | "enum"
-    | "format"
     | "type"
+    | "allOf"
+    | "anyOf"
+    | "oneOf"
+    | "not";
 
-  export type Array =
-    | "items"
-    | "maxItems"
-    | "minItems"
-    | "contains"
-    | "maxContains"
-    | "minContains"
-    | "prefixItems"
-    | "uniqueItems";
-
-  export type Number =
+type FieldsNumber =
     | "exclusiveMaximum"
     | "exclusiveMinimum"
     | "maximum"
     | "minimum"
     | "multipleOf";
 
-  export type Object =
+type FieldsString =
+    | "format"
+    | "maxLength"
+    | "minLength"
+    | "pattern";
+
+type FieldsObject =
+    | "required"
     | "additionalProperties"
     | "maxProperties"
     | "minProperties"
     | "patternProperties"
     | "properties"
     | "propertyNames"
-    | "required"
 
-  export type String =
-    | "maxLength"
-    | "minLength"
-    | "pattern";
-}
+type FieldsArray =
+    | "items"
+    | "maxItems"
+    | "minItems"
+    | "prefixItems"
+    | "uniqueItems";
 
 export const Format = {
   Date: "date",
